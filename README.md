@@ -1,8 +1,8 @@
 
 
-# 🛒 E-Commerce Microservices System
+#  E-Commerce Microservices System
 
-A modular e-commerce backend built with **Java 17 + Spring Boot 3** using a **Microservices Architecture**.  
+A modular e-commerce backend built with **Java 21 + Spring Boot 3** using a **Microservices Architecture**.  
 Each service exposes REST APIs and communicates through **Eureka Service Discovery** and **Spring Cloud Gateway**.
 
 ---
