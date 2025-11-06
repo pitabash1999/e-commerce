@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        # ORDER SERVICE ROUTE
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/orders/**
+
+        # INVENTORY SERVICE ROUTE
+        - id: inventory-service
+          uri: lb://INVENTORY-SERVICE
+          predicates:
+            - Path=/api/products/**
+
+        # PAYMENT SERVICE ROUTE
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payment/**
+
+server:
+  port: 1922
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:1918/eureka}
+    register-with-eureka: true
+    fetchRegistry: true
+  instance:
+    preferIpAddress: true
+
+
