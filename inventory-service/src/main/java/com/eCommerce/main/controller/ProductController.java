@@ -1,5 +1,7 @@
 package com.eCommerce.main.controller;
 
+import com.eCommerce.main.dto.ItemDto;
+import com.eCommerce.main.dto.ProductPayLoadDto;
 import com.eCommerce.main.dto.ProductRequestDto;
 import com.eCommerce.main.dto.ProductResponseDto;
 import com.eCommerce.main.exceptions.InsufficientStockException;
@@ -36,10 +38,24 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/payload")
+    public ResponseEntity< List<ProductPayLoadDto>> getProductPayLoadById(@RequestBody  List<ItemDto> itemDtos) throws ProductNotFoundException {
+        List<ProductPayLoadDto> response = productService.getProductPayLoad(itemDtos);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
         List<ProductResponseDto> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
+    }
+
+    @PutMapping("/updateCancelledProduct")
+    public ResponseEntity<List<ProductPayLoadDto>> updateCanceledProduct(
+            @RequestBody  List<ItemDto> itemDtos
+    ) throws ProductNotFoundException {
+        List<ProductPayLoadDto> response = productService.updateCanceledProductQuantity(itemDtos);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category/{category}")

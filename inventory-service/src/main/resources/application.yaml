@@ -19,3 +19,12 @@ spring:
 
 server:
   port: 1919
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:1918/eureka}
+    fetchRegistry: true
+    register-with-eureka: true
+  instance:
+    preferIpAddress: true

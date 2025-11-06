@@ -1,5 +1,7 @@
 package com.eCommerce.main.service.impl;
 
+import com.eCommerce.main.dto.ItemDto;
+import com.eCommerce.main.dto.ProductPayLoadDto;
 import com.eCommerce.main.dto.ProductRequestDto;
 import com.eCommerce.main.dto.ProductResponseDto;
 import com.eCommerce.main.exceptions.InsufficientStockException;
@@ -28,6 +30,32 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto saveProduct(ProductRequestDto productRequestDto) {
         Product product=modelMapper.map(productRequestDto,Product.class);
         return modelMapper.map(productRepository.save(product),ProductResponseDto.class);
+    }
+
+    @Override
+    public List<ProductPayLoadDto> getProductPayLoad(List<ItemDto> itemDtos) throws ProductNotFoundException {
+
+
+        return itemDtos.stream()
+                .map(item->{
+                    try {
+                        Product product = productRepository.findById(item.getProductId())
+                                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + item.getProductId()));
+                        reduceStock(item.getProductId(),item.getOrderedQuantity());
+                        return ProductPayLoadDto.builder()
+                                .productId(product.getId())
+                                .name(product.getName())
+                                .price(product.getPrice())
+                                .category(product.getCategory())
+                                .orderedQuantity(item.getOrderedQuantity())
+                                .build();
+                    } catch (ProductNotFoundException | InsufficientStockException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }).toList();
+
+
     }
 
     @Override
@@ -106,6 +134,31 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductPayLoadDto> updateCanceledProductQuantity(List<ItemDto> itemDtos) throws ProductNotFoundException {
+        return itemDtos
+                .stream()
+                .map(item->{
+                    try {
+
+                        Product product = productRepository.findById(item.getProductId())
+                                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + item.getProductId()));
+                        increaseStock(item.getProductId(),item.getOrderedQuantity());
+                        return ProductPayLoadDto.builder()
+                                .productId(product.getId())
+                                .name(product.getName())
+                                .price(product.getPrice())
+                                .category(product.getCategory())
+                                .orderedQuantity(item.getOrderedQuantity())
+                                .build();
+                    } catch (ProductNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                })
+                .toList();
+    }
+
+    @Override
     public void deleteProduct(Long id) throws ProductNotFoundException {
         if (!productRepository.existsById(id)) {
             throw new ProductNotFoundException("Product not found with ID: " + id);
@@ -124,7 +177,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDto reduceStock(Long id, Long quantity) throws ProductNotFoundException, InsufficientStockException {
+    public ProductResponseDto reduceStock(Long id, Long quantity) throws ProductNotFoundException{
         synchronized (("PRODUCT_" + id).intern()) {
             Product product = productRepository.findById(id)
                     .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + id));
