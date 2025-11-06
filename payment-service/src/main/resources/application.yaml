@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/payment_db}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Kuna@1234}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+server:
+  port: 1921
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:1918/eureka}
+    fetchRegistry: true
+    register-with-eureka: true
+  instance:
+    preferIpAddress: true
+
+transaction:
+  idGeneratorString: QWERTYUIOPLKJHGFDSAXCVBNMmnbvcxzlkjhgfdsapoiuytrewq1234567890
